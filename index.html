@@ -314,7 +314,7 @@
         }
 
         .lead-container {
-            max-width: 560px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 0 2rem;
             text-align: center;
@@ -335,78 +335,21 @@
 
         .lead-form {
             background: var(--white);
-            padding: 2rem;
+            padding: 0;
             border-radius: 12px;
             box-shadow: 0 0 0 1px var(--gray-light);
-            text-align: left;
+            overflow: hidden;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.4rem;
-            font-weight: 500;
-            color: var(--black);
-            font-size: 0.85rem;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
+        .lead-form iframe {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--gray-light);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-            background: var(--white);
-            color: var(--black);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--blue);
-            box-shadow: 0 0 0 1px var(--blue);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            background: var(--blue);
-            color: var(--white);
+            height: 480px;
             border: none;
-            padding: 0.875rem;
-            border-radius: 24px;
-            font-family: inherit;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 0.5rem;
-        }
-
-        .btn-submit:hover {
-            background: var(--blue-dark);
+            display: block;
         }
 
         .privacy-note {
-            margin-top: 1rem;
+            margin-top: 1.25rem;
             font-size: 0.75rem;
             color: var(--gray-text);
             text-align: center;
@@ -905,8 +848,8 @@
                 justify-content: center;
             }
 
-            .form-row {
-                grid-template-columns: 1fr;
+            .lead-form iframe {
+                height: 520px;
             }
 
             .services-grid {
@@ -956,8 +899,8 @@
                 justify-content: center;
             }
 
-            .lead-form {
-                padding: 1.25rem;
+            .lead-form iframe {
+                height: 550px;
             }
         }
 
@@ -972,7 +915,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="#" class="logo">
-                <img src="logo.jpg" alt="Estrato Legal Consultores Logo">
+                <img src="1000197644.jpg" alt="Estrato Legal Consultores Logo">
                 <div class="logo-text">
                     ESTRATO LEGAL
                     <span>CONSULTORES</span>
@@ -1015,7 +958,7 @@
             </div>
             <div class="hero-visual">
                 <div class="hero-image-container">
-                    <img src="logo.jpg" alt="Estrato Legal Consultores" class="hero-image">
+                    <img src="1000197644.jpg" alt="Estrato Legal Consultores" class="hero-image">
                     <div class="hero-badge">
                         <div class="hero-badge-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
@@ -1030,58 +973,20 @@
         </div>
     </section>
 
-    <!-- ===== LEAD CAPTURE ===== -->
+    <!-- ===== LEAD CAPTURE CON BREVO ===== -->
     <section class="lead-section" id="contacto">
         <div class="lead-container">
             <h2>¿Tienes un problema legal?</h2>
             <p>Un especialista te contactará en menos de 24 horas. Sin compromiso.</p>
             
-            <form class="lead-form" onsubmit="handleSubmit(event)">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nombre">Nombre completo *</label>
-                        <input type="text" id="nombre" name="nombre" required placeholder="Ej. Juan Pérez">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Correo electrónico *</label>
-                        <input type="email" id="email" name="email" required placeholder="ejemplo@correo.com">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="telefono">Teléfono *</label>
-                        <input type="tel" id="telefono" name="telefono" required placeholder="55 1234 5678">
-                    </div>
-                    <div class="form-group">
-                        <label for="asunto">Tipo de asunto *</label>
-                        <select id="asunto" name="asunto" required>
-                            <option value="" disabled selected>Selecciona</option>
-                            <option value="clausura">Clausura o suspensión</option>
-                            <option value="invea">Procedimiento vs INVEA</option>
-                            <option value="alcaldia">Procedimiento vs Alcaldía</option>
-                            <option value="paot">Procedimiento vs PAOT</option>
-                            <option value="ejecucion">Ejecución y embargo</option>
-                            <option value="credito">Crédito fiscal</option>
-                            <option value="otro">Otro asunto</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="mensaje">Cuéntanos brevemente tu caso</label>
-                    <textarea id="mensaje" name="mensaje" placeholder="Describe tu situación legal..."></textarea>
-                </div>
-                
-                <button type="submit" class="btn-submit">
-                    Solicitar Asesoría Gratuita
-                </button>
-                
-                <p class="privacy-note">
-                    Al enviar, aceptas nuestro <a href="#aviso-privacidad" onclick="openModal('privacy'); return false;">Aviso de Privacidad</a> y 
-                    <a href="#terminos" onclick="openModal('terms'); return false;">Términos y Condiciones</a>.
-                </p>
-            </form>
+            <div class="lead-form">
+                <iframe src="https://87f171f3.sibforms.com/v2/serve/MUIFACAM5jncXoDiiZ0guFK0LZ8OlGGxwotyvHQ9CV0D5TY73zsC3ovCsjlFNt9RHdgUm-vwAZnint2sKEIac5SvLB5iVoWhWXb3wl2Gls_hqHbQka0exaADtHbZ2t8DNsEwJhR3aIuSwCfsqyqjREYxbuJQllq1K5ROpw_IKVeVAxcQQwbjvIF33l5kXbcww32Gz4baXVtpImkXTQ==" frameborder="0" scrolling="auto" allowfullscreen></iframe>
+            </div>
+            
+            <p class="privacy-note">
+                Al enviar tus datos, aceptas nuestro <a href="#aviso-privacidad" onclick="openModal('privacy'); return false;">Aviso de Privacidad</a> y 
+                <a href="#terminos" onclick="openModal('terms'); return false;">Términos y Condiciones</a>.
+            </p>
         </div>
     </section>
 
@@ -1147,7 +1052,7 @@
     <section class="about" id="nosotros">
         <div class="about-container">
             <div class="about-image">
-                <img src="logo.jpg" alt="Equipo Estrato Legal">
+                <img src="1000197644.jpg" alt="Equipo Estrato Legal">
             </div>
             
             <div class="about-content">
@@ -1198,7 +1103,7 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-brand">
-                <img src="logo.jpg" alt="Estrato Legal">
+                <img src="1000197644.jpg" alt="Estrato Legal">
                 <p>Estrategias legales especializadas en defensa administrativa y fiscal en la Ciudad de México. Protegemos tu negocio con velocidad y resultados.</p>
             </div>
             
@@ -1346,27 +1251,6 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModalDirect();
         });
-
-        function handleSubmit(e) {
-            e.preventDefault();
-            const btn = e.target.querySelector('.btn-submit');
-            const originalText = btn.textContent;
-            
-            btn.textContent = 'Enviando...';
-            btn.disabled = true;
-            
-            setTimeout(() => {
-                btn.textContent = '¡Enviado! Te contactaremos pronto';
-                btn.style.background = '#25D366';
-                e.target.reset();
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.disabled = false;
-                    btn.style.background = '';
-                }, 3000);
-            }, 1500);
-        }
 
         window.addEventListener('scroll', () => {
             const navbar = document.querySelector('.navbar');
