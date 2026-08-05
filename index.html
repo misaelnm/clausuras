@@ -462,6 +462,71 @@
             display: none;
         }
 
+        .form-message {
+            margin-top: 1rem;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .form-message.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        .form-message.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
+        .form-message.info {
+            display: block;
+            background: #e3f2fd;
+            color: #1565c0;
+            border: 1px solid #90caf9;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-submit .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-submit.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-submit.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .privacy-note {
             margin-top: 1.25rem;
             font-size: 0.75rem;
@@ -1130,10 +1195,13 @@
                         <input type="text" id="MENSAJE" name="MENSAJE" placeholder="Cuéntanos brevemente tu caso..." maxlength="200">
                     </div>
 
-                    <button class="btn-submit" type="submit">
+                    <button class="btn-submit" type="submit" id="submitBtn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                        Solicitar Diagnóstico Jurídico
+                        <span class="spinner"></span>
+                        <span class="btn-text">Solicitar Diagnóstico Jurídico</span>
                     </button>
+
+                    <div class="form-message" id="formMessage"></div>
 
                     <input type="text" name="email_address_check" value="" class="input--hidden">
                     <input type="hidden" name="locale" value="es">
@@ -1431,6 +1499,111 @@
                 }
             });
         });
+
+        // ===== MANEJO DEL FORMULARIO BREVO =====
+        (function() {
+            const form = document.getElementById('sib-form');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const messageDiv = document.getElementById('formMessage');
+            const actionUrl = form.getAttribute('action');
+
+            // Verificar si ya existe un registro con este teléfono en localStorage
+            function checkExistingPhone(phone) {
+                if (!phone) return false;
+                const cleanPhone = phone.replace(/\D/g, '');
+                const stored = localStorage.getItem('estrato_phones');
+                if (!stored) return false;
+                const phones = JSON.parse(stored);
+                return phones.includes(cleanPhone);
+            }
+
+            function storePhone(phone) {
+                if (!phone) return;
+                const cleanPhone = phone.replace(/\D/g, '');
+                const stored = localStorage.getItem('estrato_phones');
+                const phones = stored ? JSON.parse(stored) : [];
+                if (!phones.includes(cleanPhone)) {
+                    phones.push(cleanPhone);
+                    localStorage.setItem('estrato_phones', JSON.stringify(phones));
+                }
+            }
+
+            function showMessage(text, type) {
+                messageDiv.textContent = text;
+                messageDiv.className = 'form-message ' + type;
+            }
+
+            function hideMessage() {
+                messageDiv.className = 'form-message';
+                messageDiv.style.display = 'none';
+            }
+
+            function setLoading(loading) {
+                submitBtn.disabled = loading;
+                if (loading) {
+                    submitBtn.classList.add('loading');
+                    btnText.style.display = 'none';
+                } else {
+                    submitBtn.classList.remove('loading');
+                    btnText.style.display = 'inline';
+                }
+            }
+
+            function clearForm() {
+                form.reset();
+                document.getElementById('SMS__COUNTRY_CODE').value = '+52';
+            }
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                hideMessage();
+
+                const phone = document.getElementById('SMS').value.trim();
+                const email = document.getElementById('EMAIL').value.trim();
+
+                // Validación básica
+                if (!email || !document.getElementById('NOMBRE').value.trim()) {
+                    showMessage('Por favor completa los campos obligatorios.', 'error');
+                    return;
+                }
+
+                // Verificar si el teléfono ya fue registrado en este navegador
+                if (phone && checkExistingPhone(phone)) {
+                    showMessage('Este número de teléfono ya está registrado. Te contactaremos pronto. Si necesitas ayuda urgente, escríbenos por WhatsApp.', 'info');
+                    clearForm();
+                    return;
+                }
+
+                setLoading(true);
+
+                try {
+                    const formData = new FormData(form);
+
+                    // Enviar a Brevo via fetch (no-cors para evitar redirección)
+                    await fetch(actionUrl, {
+                        method: 'POST',
+                        body: formData,
+                        mode: 'no-cors',
+                        credentials: 'omit'
+                    });
+
+                    // Guardar teléfono en localStorage para futuras validaciones
+                    if (phone) storePhone(phone);
+
+                    // Mostrar mensaje de éxito
+                    showMessage('¡Gracias! Hemos recibido tu solicitud. Un especialista te contactará en menos de 24 horas. Si ya estabas registrado, actualizamos tus datos.', 'success');
+
+                    // Limpiar formulario
+                    clearForm();
+
+                } catch (err) {
+                    showMessage('Hubo un problema al enviar tu información. Intenta de nuevo o contáctanos directamente por WhatsApp.', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            });
+        })();
     </script>
 </body>
 </html>
